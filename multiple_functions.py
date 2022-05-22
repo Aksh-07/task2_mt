@@ -44,6 +44,8 @@ def task1(list_):
         print(f"Thread_{get_ident()}, Pushing data into Database")
         c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", new_item_list)
         con.commit()
+        event[0].clear()
+        event[1].set()
 
         c.execute("SELECT rowid, * FROM my_table")
         print(f"Thread_{get_ident()}, Fetching data from Database")
@@ -53,8 +55,6 @@ def task1(list_):
             print(f"{item[0]}: {item[1]} {item[2]} {item[3]} {item[4]}")
 
         con.close()
-    event[0].clear()
-    event[1].set()
 
 
 def task2(list_):
@@ -73,6 +73,8 @@ def task2(list_):
         print(f"Thread_{get_ident()}, Pushing data into Database")
         c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", new_item_list)
         con.commit()
+        event[1].clear()
+        event[2].set()
 
         c.execute("SELECT rowid, * FROM my_table")
         print(f"Thread_{get_ident()}, Fetching data from Database")
@@ -82,8 +84,6 @@ def task2(list_):
             print(f"{item[0]}: {item[1]} {item[2]} {item[3]} {item[4]}")
 
         con.close()
-    event[1].clear()
-    event[2].set()
 
 
 def task3(list_):
@@ -102,6 +102,8 @@ def task3(list_):
         print(f"Thread_{get_ident()}, Pushing data into Database")
         c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", new_item_list)
         con.commit()
+        event[2].clear()
+        event[3].set()
 
         c.execute("SELECT rowid, * FROM my_table")
         print(f"Thread_{get_ident()}, Fetching data from Database")
@@ -111,8 +113,6 @@ def task3(list_):
             print(f"{item[0]}: {item[1]} {item[2]} {item[3]} {item[4]}")
 
         con.close()
-    event[2].clear()
-    event[3].set()
 
 
 def task4(list_):
@@ -131,6 +131,8 @@ def task4(list_):
         print(f"Thread_{get_ident()}, Pushing data into Database")
         c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", new_item_list)
         con.commit()
+        event[3].clear()
+        event[0].set()
 
         c.execute("SELECT rowid, * FROM my_table")
         print(f"Thread_{get_ident()}, Fetching data from Database")
@@ -140,8 +142,6 @@ def task4(list_):
             print(f"{item[0]}: {item[1]} {item[2]} {item[3]} {item[4]}")
 
         con.close()
-    event[3].clear()
-    event[0].set()
 
 
 event = [Event() for _ in range(4)]

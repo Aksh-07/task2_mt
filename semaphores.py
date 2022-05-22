@@ -42,6 +42,7 @@ def task(list_, lock_):
     print(f"Thread_{get_ident()}, Pushing data into Database")
     c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", new_item_list)
     con.commit()
+    lock_.release()
 
     c.execute("SELECT rowid, * FROM my_table")
     print(f"Thread_{get_ident()}, Fetching data from Database")
@@ -51,7 +52,6 @@ def task(list_, lock_):
         print(f"{item[0]}: {item[1]} {item[2]} {item[3]} {item[4]}")
 
     con.close()
-    lock_.release()
 
 
 lock = Semaphore(4)
