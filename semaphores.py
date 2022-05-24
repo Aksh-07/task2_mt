@@ -36,8 +36,8 @@ def task(list_, lock_):
         new_item_tuple = tuple(item_list)
         new_item_list.append(new_item_tuple)
 
-    lock_.acquire()
     con = sqlite3.connect("practice.db")
+    lock_.acquire()
     c = con.cursor()
     print(f"Thread_{get_ident()}, Pushing data into Database")
     c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", new_item_list)
@@ -51,13 +51,14 @@ def task(list_, lock_):
     for item in items:
         print(f"{item[0]}: {item[1]} {item[2]} {item[3]} {item[4]}")
 
+    print(f"Thread_{get_ident()} completed")
     con.close()
 
 
 lock = Semaphore(4)
 
-delete_table()
-create_table()
+# delete_table()
+# create_table()
 
 data_list1 = [(1, 2, 3, [17, 7, 1998]), (4, 5, 6, [12, 2, 1996]), (7, 8, 9, [25, 12, 1990])]
 data_list2 = [(101, 202, 203, ["aksh", "datta", "garry"]), (85, 89, 90, ["jim", "tim", "jerry"]), (64, 65, 68, ["ram", "lakhan", "bheem"])]
@@ -65,8 +66,10 @@ data_list3 = [(10, 20, 30, [15, 9, 1990]), (22, 33, 44, [12, 2, 1996]), (64, 65,
 data_list4 = [(1001, 2002, 2003, ["aksh", "datta", "garry"]), (805, 809, 900, ["jim", "tim", "jerry"]), (604, 605, 608, ["ram", "lakhan", "bheem"])]
 
 all_data_list = [data_list1, data_list2, data_list3, data_list4]
+
 with concurrent.futures.ThreadPoolExecutor() as executor:
     futures = [executor.submit(task, data, lock) for data in all_data_list]
+
 
 f = time.time()
 print(f"Total time: {f - s}")

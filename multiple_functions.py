@@ -37,9 +37,9 @@ def task1(list_):
         new_item_tuple = tuple(item_list)
         new_item_list.append(new_item_tuple)
 
+    con = sqlite3.connect("practice.db")
     event1_set = event[0].wait()
     if event1_set:
-        con = sqlite3.connect("practice.db")
         c = con.cursor()
         print(f"Thread_{get_ident()}, Pushing data into Database")
         c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", new_item_list)
@@ -54,11 +54,13 @@ def task1(list_):
         for item in items:
             print(f"{item[0]}: {item[1]} {item[2]} {item[3]} {item[4]}")
 
+        print(f"Thread_{get_ident()} completed")
         con.close()
 
 
 def task2(list_):
     new_item_list = []
+    event[1].set()
 
     for item_tuple in list_:
         item_list = list(item_tuple)
@@ -66,9 +68,9 @@ def task2(list_):
         new_item_tuple = tuple(item_list)
         new_item_list.append(new_item_tuple)
 
+    con = sqlite3.connect("practice.db")
     event2_set = event[1].wait()
     if event2_set:
-        con = sqlite3.connect("practice.db")
         c = con.cursor()
         print(f"Thread_{get_ident()}, Pushing data into Database")
         c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", new_item_list)
@@ -83,11 +85,13 @@ def task2(list_):
         for item in items:
             print(f"{item[0]}: {item[1]} {item[2]} {item[3]} {item[4]}")
 
+        print(f"Thread_{get_ident()} completed")
         con.close()
 
 
 def task3(list_):
     new_item_list = []
+    event[2].set()
 
     for item_tuple in list_:
         item_list = list(item_tuple)
@@ -95,9 +99,9 @@ def task3(list_):
         new_item_tuple = tuple(item_list)
         new_item_list.append(new_item_tuple)
 
+    con = sqlite3.connect("practice.db")
     event3_set = event[2].wait()
     if event3_set:
-        con = sqlite3.connect("practice.db")
         c = con.cursor()
         print(f"Thread_{get_ident()}, Pushing data into Database")
         c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", new_item_list)
@@ -111,12 +115,13 @@ def task3(list_):
         items = c.fetchall()
         for item in items:
             print(f"{item[0]}: {item[1]} {item[2]} {item[3]} {item[4]}")
-
+        print(f"Thread_{get_ident()} completed")
         con.close()
 
 
 def task4(list_):
     new_item_list = []
+    event[3].set()
 
     for item_tuple in list_:
         item_list = list(item_tuple)
@@ -124,9 +129,9 @@ def task4(list_):
         new_item_tuple = tuple(item_list)
         new_item_list.append(new_item_tuple)
 
+    con = sqlite3.connect("practice.db")
     event4_set = event[3].wait()
     if event4_set:
-        con = sqlite3.connect("practice.db")
         c = con.cursor()
         print(f"Thread_{get_ident()}, Pushing data into Database")
         c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", new_item_list)
@@ -141,13 +146,14 @@ def task4(list_):
         for item in items:
             print(f"{item[0]}: {item[1]} {item[2]} {item[3]} {item[4]}")
 
+        print(f"Thread_{get_ident()} completed")
         con.close()
 
 
 event = [Event() for _ in range(4)]
 
-delete_table()
-create_table()
+# delete_table()
+# create_table()
 
 data_list1 = [(1, 2, 3, [17, 7, 1998]), (4, 5, 6, [12, 2, 1996]), (7, 8, 9, [25, 12, 1990])]
 data_list2 = [(101, 202, 203, ["aksh", "datta", "garry"]), (85, 89, 90, ["jim", "tim", "jerry"]), (64, 65, 68, ["ram", "lakhan", "bheem"])]

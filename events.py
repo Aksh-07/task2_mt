@@ -37,9 +37,9 @@ def task(list_, event_):
         new_item_tuple = tuple(item_list)
         new_item_list.append(new_item_tuple)
 
+    con = sqlite3.connect("practice.db")
     event_set = event_.wait()
     if event_set:
-        con = sqlite3.connect("practice.db")
         c = con.cursor()
         print(f"Thread_{get_ident()}, Pushing data into Database")
         c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", new_item_list)
@@ -53,13 +53,14 @@ def task(list_, event_):
         for item in items:
             print(f"{item[0]}: {item[1]} {item[2]} {item[3]} {item[4]}")
 
+        print(f"Thread_{get_ident()} completed")
         con.close()
 
 
 event = Event()
 
-delete_table()
-create_table()
+# delete_table()
+# create_table()
 
 data_list1 = [(1, 2, 3, [17, 7, 1998]), (4, 5, 6, [12, 2, 1996]), (7, 8, 9, [25, 12, 1990])]
 data_list2 = [(101, 202, 203, ["aksh", "datta", "garry"]), (85, 89, 90, ["jim", "tim", "jerry"]), (64, 65, 68, ["ram", "lakhan", "bheem"])]
