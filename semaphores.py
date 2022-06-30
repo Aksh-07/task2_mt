@@ -4,7 +4,10 @@ import sqlite3
 import concurrent.futures
 
 s = time.time()
-
+data_list1 = []
+data_list2 = []
+data_list3 = []
+data_list4 = []
 
 def create_table():
     con = sqlite3.connect("practice.db")
@@ -28,42 +31,56 @@ def delete_table():
 
 
 def task(list_, lock_):
-    new_item_list = []
-
-    for item_tuple in list_:
-        item_list = list(item_tuple)
-        item_list[3] = str(item_list[3])
-        new_item_tuple = tuple(item_list)
-        new_item_list.append(new_item_tuple)
-
     con = sqlite3.connect("practice.db")
     lock_.acquire()
     c = con.cursor()
     print(f"Thread_{get_ident()}, Pushing data into Database")
-    c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", new_item_list)
-    con.commit()
+    c.executemany("INSERT INTO my_table VALUES (?, ?, ?, ?)", list_)
     lock_.release()
+    con.commit()
+    con.close()
+    print(f"completed_{get_ident()}")
+    if lock_._value == 4:
+        fetch()
 
+
+def fetch():
+    con = sqlite3.connect("practice.db")
+    c = con.cursor()
     c.execute("SELECT rowid, * FROM my_table")
     print(f"Thread_{get_ident()}, Fetching data from Database")
 
     items = c.fetchall()
     for item in items:
         print(f"{item[0]}: {item[1]} {item[2]} {item[3]} {item[4]}")
-
-    print(f"Thread_{get_ident()} completed")
     con.close()
+
+
+def convert_data(data):
+    new_data = []
+
+    for item_tuple in data:
+        item_tuple = eval(item_tuple)
+        item_list = list(item_tuple)
+        item_list[3] = str(item_list[3])
+        new_data.append(item_list)
+    l = len(new_data)
+
+    data_list1.extend(new_data[:int(l/4)])
+    data_list2.extend(new_data[int(l/4):int(l/2)])
+    data_list3.extend(new_data[int(l/2):int(l*(3/4))])
+    data_list4.extend(new_data[int(l*(3/4)):])
 
 
 lock = Semaphore(4)
 
-# delete_table()
-# create_table()
+delete_table()
+create_table()
 
-data_list1 = [(1, 2, 3, [17, 7, 1998]), (4, 5, 6, [12, 2, 1996]), (7, 8, 9, [25, 12, 1990]), (1, 2, 3, [17, 7, 1998]), (4, 5, 6, [12, 2, 1996]), (7, 8, 9, [25, 12, 1990]), (1, 2, 3, [17, 7, 1998]), (4, 5, 6, [12, 2, 1996]), (7, 8, 9, [25, 12, 1990]), (1, 2, 3, [17, 7, 1998]), (4, 5, 6, [12, 2, 1996]), (7, 8, 9, [25, 12, 1990]), (1, 2, 3, [17, 7, 1998]), (4, 5, 6, [12, 2, 1996]), (7, 8, 9, [25, 12, 1990])]
-data_list2 = [(101, 202, 203, ["aksh", "datta", "garry"]), (85, 89, 90, ["jim", "tim", "jerry"]), (64, 65, 68, ["ram", "lakhan", "bheem"]), (101, 202, 203, ["aksh", "datta", "garry"]), (85, 89, 90, ["jim", "tim", "jerry"]), (64, 65, 68, ["ram", "lakhan", "bheem"]), (101, 202, 203, ["aksh", "datta", "garry"]), (85, 89, 90, ["jim", "tim", "jerry"]), (64, 65, 68, ["ram", "lakhan", "bheem"]), (101, 202, 203, ["aksh", "datta", "garry"]), (85, 89, 90, ["jim", "tim", "jerry"]), (64, 65, 68, ["ram", "lakhan", "bheem"]), (101, 202, 203, ["aksh", "datta", "garry"]), (85, 89, 90, ["jim", "tim", "jerry"]), (64, 65, 68, ["ram", "lakhan", "bheem"])]
-data_list3 = [(10, 20, 30, [15, 9, 1990]), (22, 33, 44, [12, 2, 1996]), (64, 65, 68, [25, 12, 1990]), (10, 20, 30, [15, 9, 1990]), (22, 33, 44, [12, 2, 1996]), (64, 65, 68, [25, 12, 1990]), (10, 20, 30, [15, 9, 1990]), (22, 33, 44, [12, 2, 1996]), (64, 65, 68, [25, 12, 1990]), (10, 20, 30, [15, 9, 1990]), (22, 33, 44, [12, 2, 1996]), (64, 65, 68, [25, 12, 1990]), (10, 20, 30, [15, 9, 1990]), (22, 33, 44, [12, 2, 1996]), (64, 65, 68, [25, 12, 1990])]
-data_list4 = [(1001, 2002, 2003, ["aksh", "datta", "garry"]), (805, 809, 900, ["jim", "tim", "jerry"]), (604, 605, 608, ["ram", "lakhan", "bheem"]), (1001, 2002, 2003, ["aksh", "datta", "garry"]), (805, 809, 900, ["jim", "tim", "jerry"]), (604, 605, 608, ["ram", "lakhan", "bheem"]), (1001, 2002, 2003, ["aksh", "datta", "garry"]), (805, 809, 900, ["jim", "tim", "jerry"]), (604, 605, 608, ["ram", "lakhan", "bheem"]), (1001, 2002, 2003, ["aksh", "datta", "garry"]), (805, 809, 900, ["jim", "tim", "jerry"]), (604, 605, 608, ["ram", "lakhan", "bheem"]), (1001, 2002, 2003, ["aksh", "datta", "garry"]), (805, 809, 900, ["jim", "tim", "jerry"]), (604, 605, 608, ["ram", "lakhan", "bheem"])]
+with open("dataset.txt", "rt") as file:
+    data_ = file.readlines()
+
+convert_data(data_)
 
 all_data_list = [data_list1, data_list2, data_list3, data_list4]
 
